@@ -1,0 +1,559 @@
+Codigo:
+
+
+INDEX.HTML
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Matemática - Inicio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>MathEngine Web</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">Calculadora</a></li>
+                <li><a href="servicios.html">Servicios API</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>Resolución de Problemas Matemáticos</h2>
+            <p style="margin-bottom: 1.5rem; color: #64748b;">
+                Selecciona un tipo de problema matemático. La petición será procesada y calculada en el backend por el servidor <strong>Node.js/Express</strong>.
+            </p>
+
+            <div class="form-group">
+                <label for="tipoOperacion">Selecciona Operación:</label>
+                <select id="tipoOperacion" onchange="cambiarFormulario()">
+                    <option value="ecuacion_2grado">Ecuación de 2º Grado (ax² + bx + c = 0)</option>
+                    <option value="pitagoras">Teorema de Pitágoras (Catetos → Hipotenusa)</option>
+                    <option value="area_circulo">Área y Perímetro de un Círculo</option>
+                    <option value="area_triangulo">Área de un Triángulo</option>
+                </select>
+            </div>
+
+            <!-- Campos Ecuación -->
+            <div id="camposEcuacion">
+                <div class="form-group">
+                    <label>Coeficiente a:</label>
+                    <input type="number" id="inputA" placeholder="Ej: 1" step="any">
+                </div>
+                <div class="form-group">
+                    <label>Coeficiente b:</label>
+                    <input type="number" id="inputB" placeholder="Ej: -5" step="any">
+                </div>
+                <div class="form-group">
+                    <label>Coeficiente c:</label>
+                    <input type="number" id="inputC" placeholder="Ej: 6" step="any">
+                </div>
+            </div>
+
+            <!-- Campos Geometría (Círculo/Triángulo/Pitágoras) -->
+            <div id="camposGeometria" style="display: none;">
+                <div class="form-group" id="groupValor1">
+                    <label id="labelVal1">Valor 1:</label>
+                    <input type="number" id="inputVal1" placeholder="0" step="any">
+                </div>
+                <div class="form-group" id="groupValor2">
+                    <label id="labelVal2">Valor 2:</label>
+                    <input type="number" id="inputVal2" placeholder="0" step="any">
+                </div>
+            </div>
+
+            <button class="btn" id="btnCalcular">Calcular con Node.js</button>
+
+            <div id="boxResultado" class="resultado-box">
+                <h3 id="resTitulo">Resultado:</h3>
+                <p id="resTexto" style="font-size: 1.2rem; font-weight: bold; margin: 0.5rem 0;"></p>
+                <p id="resDetalle" style="font-size: 0.95rem;"></p>
+                <small id="resTime" style="color: #64748b;"></small>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Práctica UD1 - Arquitecturas Web | Servidor Apache (Archivos Estáticos) + Node.js (Backend)</p>
+    </footer>
+
+    <script>
+        function cambiarFormulario() {
+            const tipo = document.getElementById('tipoOperacion').value;
+            const cEcuacion = document.getElementById('camposEcuacion');
+            const cGeo = document.getElementById('camposGeometria');
+            const gVal2 = document.getElementById('groupValor2');
+
+            if (tipo === 'ecuacion_2grado') {
+                cEcuacion.style.display = 'block';
+                cGeo.style.display = 'none';
+            } else if (tipo === 'pitagoras') {
+                cEcuacion.style.display = 'none';
+                cGeo.style.display = 'block';
+                gVal2.style.display = 'block';
+                document.getElementById('labelVal1').innerText = 'Cateto a:';
+                document.getElementById('labelVal2').innerText = 'Cateto b:';
+            } else if (tipo === 'area_circulo') {
+                cEcuacion.style.display = 'none';
+                cGeo.style.display = 'block';
+                gVal2.style.display = 'none';
+                document.getElementById('labelVal1').innerText = 'Radio (r):';
+            } else if (tipo === 'area_triangulo') {
+                cEcuacion.style.display = 'none';
+                cGeo.style.display = 'block';
+                gVal2.style.display = 'block';
+                document.getElementById('labelVal1').innerText = 'Base (b):';
+                document.getElementById('labelVal2').innerText = 'Altura (h):';
+            }
+        }
+
+        document.getElementById('btnCalcular').addEventListener('click', async () => {
+            const tipo = document.getElementById('tipoOperacion').value;
+            const boxRes = document.getElementById('boxResultado');
+            boxRes.style.display = 'none';
+
+            let payload = { tipo: tipo };
+
+            if (tipo === 'ecuacion_2grado') {
+                payload.a = document.getElementById('inputA').value;
+                payload.b = document.getElementById('inputB').value;
+                payload.c = document.getElementById('inputC').value;
+            } else if (tipo === 'pitagoras') {
+                payload.a = document.getElementById('inputVal1').value;
+                payload.b = document.getElementById('inputVal2').value;
+            } else if (tipo === 'area_circulo') {
+                payload.radio = document.getElementById('inputVal1').value;
+            } else if (tipo === 'area_triangulo') {
+                payload.base = document.getElementById('inputVal1').value;
+                payload.altura = document.getElementById('inputVal2').value;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/calcular', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                boxRes.style.display = 'block';
+
+                if (!response.ok) {
+                    boxRes.className = 'resultado-box error';
+                    document.getElementById('resTitulo').innerText = 'Error de cálculo';
+                    document.getElementById('resTexto').innerText = data.error || 'Ocurrió un error inesperado.';
+                    document.getElementById('resDetalle').innerText = '';
+                    document.getElementById('resTime').innerText = '';
+                } else {
+                    boxRes.className = 'resultado-box success';
+                    document.getElementById('resTitulo').innerText = 'Resultado Obtenido:';
+                    document.getElementById('resTexto').innerText = data.resultado;
+                    document.getElementById('resDetalle').innerText = data.detalle;
+                    document.getElementById('resTime').innerText = 'Hora de procesamiento: ' + data.timestamp;
+                }
+            } catch (error) {
+                boxRes.style.display = 'block';
+                boxRes.className = 'resultado-box error';
+                document.getElementById('resTitulo').innerText = 'Error de Conexión';
+                document.getElementById('resTexto').innerText = 'No se pudo conectar con el servidor Node.js en http://localhost:3000';
+                document.getElementById('resDetalle').innerText = 'Asegúrate de haber ejecutado "node app.js" en la terminal de VS Code.';
+                document.getElementById('resTime').innerText = '';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+SERVICIOS.HTML
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios API - MathEngine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>MathEngine Web</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Calculadora</a></li>
+                <li><a href="servicios.html" class="active">Servicios API</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>Arquitectura del Sistema</h2>
+            <p>Esta aplicación utiliza una arquitectura desacoplada donde el frontend web es servido mediante <strong>Apache HTTP Server</strong> y la lógica de negocio mediante un backend independiente en <strong>Node.js y Express</strong>.</p>
+        </section>
+
+        <section class="card">
+            <h2>Endpoints de la API REST</h2>
+            <ul style="line-height: 1.8; margin-left: 1.2rem;">
+                <li><strong>GET /</strong>: Comprobación del estado del servidor.</li>
+                <li><strong>POST /api/calcular</strong>: Endpoint principal para el cómputo de ecuaciones y problemas geométricos.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>Práctica UD1 - Arquitecturas Web | Servidor Apache (Archivos Estáticos) + Node.js (Backend)</p>
+    </footer>
+
+</body>
+</html>
+
+
+
+
+CONTACTO.HTML
+
+
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - MathEngine</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>MathEngine Web</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Calculadora</a></li>
+                <li><a href="servicios.html">Servicios API</a></li>
+                <li><a href="contacto.html" class="active">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="card">
+            <h2>Formulario de Contacto</h2>
+            <form onsubmit="event.preventDefault(); alert('Mensaje enviado correctamente');">
+                <div class="form-group">
+                    <label for="nombre">Nombre completo:</label>
+                    <input type="text" id="nombre" required placeholder="Tu nombre">
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo electrónico:</label>
+                    <input type="email" id="email" required placeholder="tuemail@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label for="mensaje">Mensaje o Sugerencia:</label>
+                    <textarea id="mensaje" rows="4" required placeholder="Escribe tu consulta..."></textarea>
+                </div>
+                <button type="submit" class="btn">Enviar Mensaje</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>Práctica UD1 - Arquitecturas Web | Servidor Apache (Archivos Estáticos) + Node.js (Backend)</p>
+    </footer>
+
+</body>
+</html>
+
+
+
+
+STYLE.CSS
+
+
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f7f6;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+}
+
+nav a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+nav a:hover, nav a.active {
+    color: #38bdf8;
+}
+
+main {
+    flex: 1;
+    max-width: 900px;
+    width: 100%;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
+
+.card h2 {
+    color: #0f172a;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #0284c7;
+}
+
+.btn {
+    background-color: #0284c7;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.4rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #0369a1;
+}
+
+.resultado-box {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 6px;
+    background-color: #f1f5f9;
+    border-left: 4px solid #0284c7;
+    display: none;
+}
+
+.resultado-box.error {
+    background-color: #fef2f2;
+    border-left-color: #ef4444;
+    color: #991b1b;
+}
+
+.resultado-box.success {
+    background-color: #f0fdf4;
+    border-left-color: #22c55e;
+    color: #166534;
+}
+
+footer {
+    background-color: #0f172a;
+    color: #94a3b8;
+    text-align: center;
+    padding: 1rem;
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+
+
+
+APP.JS
+
+
+
+
+const express = require('express');
+const app = express();
+const PORT = 3000;
+
+// Permite leer cuerpos JSON en las peticiones
+app.use(express.json());
+
+// Middleware CORS para permitir peticiones desde Apache (http://localhost)
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    next();
+});
+
+// Ruta principal para verificar el estado de la API
+app.get('/', (req, res) => {
+    res.send('<h1>API Servidor Node.js / Express Activo</h1><p>Escuchando peticiones desde Apache.</p>');
+});
+
+// Ruta de cálculo matemático (API Backend)
+app.post('/api/calcular', (req, res) => {
+    const { tipo, a, b, c, radio, base, altura } = req.body;
+    let resultado = null;
+    let detalle = "";
+
+    try {
+        switch (tipo) {
+            case 'ecuacion_2grado': {
+                // ax² + bx + c = 0
+                const numA = parseFloat(a);
+                const numB = parseFloat(b);
+                const numC = parseFloat(c);
+
+                if (isNaN(numA) || isNaN(numB) || isNaN(numC)) {
+                    return res.status(400).json({ error: "Parámetros no válidos para la ecuación." });
+                }
+                if (numA === 0) {
+                    return res.status(400).json({ error: "El coeficiente 'a' no puede ser 0 en una ecuación de 2º grado." });
+                }
+
+                const discriminante = Math.pow(numB, 2) - (4 * numA * numC);
+
+                if (discriminante < 0) {
+                    resultado = "Sin soluciones reales";
+                    detalle = `Discriminante (Δ = ${discriminante.toFixed(2)}) es negativo. Las raíces son complejas.`;
+                } else if (discriminante === 0) {
+                    const x = (-numB) / (2 * numA);
+                    resultado = `x = ${x.toFixed(2)}`;
+                    detalle = "Ecuación con solución única (raíz doble).";
+                } else {
+                    const x1 = ((-numB) + Math.sqrt(discriminante)) / (2 * numA);
+                    const x2 = ((-numB) - Math.sqrt(discriminante)) / (2 * numA);
+                    resultado = `x₁ = ${x1.toFixed(2)}, x₂ = ${x2.toFixed(2)}`;
+                    detalle = `Discriminante Δ = ${discriminante.toFixed(2)}. La ecuación tiene 2 soluciones reales distintivas.`;
+                }
+                break;
+            }
+
+            case 'pitagoras': {
+                const numA = parseFloat(a);
+                const numB = parseFloat(b);
+                if (isNaN(numA) || isNaN(numB) || numA <= 0 || numB <= 0) {
+                    return res.status(400).json({ error: "Ingresa valores positivos válidos para los catetos." });
+                }
+                const hipotenusa = Math.sqrt(Math.pow(numA, 2) + Math.pow(numB, 2));
+                resultado = `Hipotenusa (c) = ${hipotenusa.toFixed(2)}`;
+                detalle = `Fórmula: c = √(${numA}² + ${numB}²) = √(${(numA**2 + numB**2).toFixed(2)})`;
+                break;
+            }
+
+            case 'area_circulo': {
+                const r = parseFloat(radio);
+                if (isNaN(r) || r <= 0) {
+                    return res.status(400).json({ error: "Proporciona un radio válido mayor que cero." });
+                }
+                const area = Math.PI * Math.pow(r, 2);
+                const perimetro = 2 * Math.PI * r;
+                resultado = `Área = ${area.toFixed(2)} u²`;
+                detalle = `Perímetro = ${perimetro.toFixed(2)} u | Fórmula: A = π × ${r}²`;
+                break;
+            }
+
+            case 'area_triangulo': {
+                const b = parseFloat(base);
+                const h = parseFloat(altura);
+                if (isNaN(b) || isNaN(h) || b <= 0 || h <= 0) {
+                    return res.status(400).json({ error: "Proporciona base y altura válidas." });
+                }
+                const area = (b * h) / 2;
+                resultado = `Área = ${area.toFixed(2)} u²`;
+                detalle = `Fórmula: A = (${b} × ${h}) / 2`;
+                break;
+            }
+
+            default:
+                return res.status(400).json({ error: "Tipo de operación matemática no reconocida." });
+        }
+
+        res.json({
+            ok: true,
+            tipo: tipo,
+            resultado: resultado,
+            detalle: detalle,
+            timestamp: new Date().toLocaleTimeString()
+        });
+
+    } catch (err) {
+        res.status(500).json({ error: "Error interno en el procesamiento matemático del servidor." });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`====================================================`);
+    console.log(`Servidor Node.js activo en: http://localhost:${PORT}`);
+    console.log(`Listo para recibir datos desde Apache/XAMPP.`);
+    console.log(`====================================================`);
+});
