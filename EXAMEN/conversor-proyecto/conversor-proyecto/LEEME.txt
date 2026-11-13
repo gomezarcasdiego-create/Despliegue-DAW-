@@ -1,0 +1,8 @@
+1. Ejecuta compilar.bat (compila y copia la app a webapps\conversor).
+2. Arranca Tomcat: carpeta bin -> CMD -> catalina.bat run
+3. Abre http://localhost:8080/conversor/
+
+Pruebas:
+ GET  90 kg  -> 198,42 lbs
+ 300 lbs -> Obesidad | 150 lbs -> Peso normal
+ Calculadora: suma, resta, multiplicacion, division (division entre 0 controlada)

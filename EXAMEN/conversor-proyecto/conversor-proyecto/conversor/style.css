@@ -1,0 +1,37 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 32px 16px;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #e8f1f8, #f6fafc);
+  color: #1f2d3d;
+}
+.grid { max-width: 520px; margin: 0 auto; }
+h1 { color: #2f5597; margin: 24px 0 4px; }
+h2 { margin: 0 0 12px; font-size: 18px; }
+.sub { color: #5b6b7b; margin-top: 0; }
+.card {
+  background: #fff; border-radius: 14px; padding: 20px 22px;
+  box-shadow: 0 4px 16px rgba(47, 85, 151, .12);
+  margin: 16px auto;
+}
+main.card { max-width: 520px; margin-top: 40px; }
+label { display: block; font-size: 13px; font-weight: 600; margin: 10px 0 4px; }
+input, select {
+  width: 100%; padding: 10px 12px; font-size: 15px;
+  border: 1px solid #c9d4df; border-radius: 8px;
+}
+.btn {
+  display: inline-block; margin-top: 16px; padding: 10px 18px;
+  border: 0; border-radius: 8px; font-size: 14px; font-weight: 600;
+  color: #fff; background: #2f5597; text-decoration: none; cursor: pointer;
+}
+.azul-btn { background: #2563eb; }
+.verde-btn { background: #15803d; }
+.op { font-size: 18px; background: #f1f5f9; padding: 10px 14px; border-radius: 8px; }
+.metodo { color: #5b6b7b; font-size: 13px; margin-top: 0; }
+.error { color: #b91c1c; font-weight: 600; }
+.badge { padding: 4px 12px; border-radius: 999px; font-weight: 700; color: #fff; }
+.azul { background: #2563eb; }
+.verde { background: #15803d; }
+.naranja { background: #d97706; }
+.rojo { background: #b91c1c; }
