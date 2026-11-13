@@ -8,72 +8,16 @@
 </head>
 <body>
   <main class="grid">
-    <h1>Conversor kg ⇄ lbs + IMC</h1>
-    <p class="sub">Altura de referencia: 180 cm</p>
+    <h1>Texto Longitud</h1>
+    <p class="sub"></p>
 
     <section class="card">
       <h2>Enviar con GET</h2>
       <form action="ConversorServlet" method="get">
-        <label>Peso</label>
+        <label>parrafo/frase</label>
         <input type="text" name="valor" placeholder="90" required>
-        <label>Conversión</label>
-        <select name="modo">
-          <option value="kg2lbs">kg → lbs (multiplicación)</option>
-          <option value="lbs2kg">lbs → kg (división)</option>
         </select>
         <button class="btn azul-btn" type="submit">Convertir con GET</button>
-      </form>
-    </section>
-
-    <section class="card">
-      <h2>Enviar con POST</h2>
-      <form action="ConversorServlet" method="post">
-        <label>Peso</label>
-        <input type="text" name="valor" placeholder="150" required>
-        <label>Conversión</label>
-        <select name="modo">
-          <option value="kg2lbs">kg → lbs (multiplicación)</option>
-          <option value="lbs2kg">lbs → kg (división)</option>
-        </select>
-        <button class="btn verde-btn" type="submit">Convertir con POST</button>
-      </form>
-    </section>
-
-    <h1>Calculadora</h1>
-
-    <section class="card">
-      <h2>Calculadora con GET</h2>
-      <form action="CalculadoraServlet" method="get">
-        <label>Número A</label>
-        <input type="text" name="a" placeholder="10" required>
-        <label>Número B</label>
-        <input type="text" name="b" placeholder="5" required>
-        <label>Operación</label>
-        <select name="op">
-          <option value="suma">Suma (+)</option>
-          <option value="resta">Resta (−)</option>
-          <option value="multiplicacion">Multiplicación (×)</option>
-          <option value="division">División (÷)</option>
-        </select>
-        <button class="btn azul-btn" type="submit">Calcular con GET</button>
-      </form>
-    </section>
-
-    <section class="card">
-      <h2>Calculadora con POST</h2>
-      <form action="CalculadoraServlet" method="post">
-        <label>Número A</label>
-        <input type="text" name="a" placeholder="10" required>
-        <label>Número B</label>
-        <input type="text" name="b" placeholder="5" required>
-        <label>Operación</label>
-        <select name="op">
-          <option value="suma">Suma (+)</option>
-          <option value="resta">Resta (−)</option>
-          <option value="multiplicacion">Multiplicación (×)</option>
-          <option value="division">División (÷)</option>
-        </select>
-        <button class="btn verde-btn" type="submit">Calcular con POST</button>
       </form>
     </section>
   </main>
